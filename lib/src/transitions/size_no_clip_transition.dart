@@ -54,6 +54,10 @@ class SizeNoClipTransition extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (sizeFactor.value == 1) {
+      return child;
+    }
+
     AlignmentDirectional alignment;
     if (axis == Axis.vertical)
       // ignore: curly_braces_in_flow_control_structures
@@ -62,7 +66,6 @@ class SizeNoClipTransition extends AnimatedWidget {
       // ignore: curly_braces_in_flow_control_structures
       alignment = AlignmentDirectional(axisAlignment, -1.0);
     return ClipRect(
-      clipBehavior: Clip.none,
       child: Align(
         alignment: alignment,
         heightFactor:
