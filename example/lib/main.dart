@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -30,6 +30,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<int> _items = [];
+
+  void _addManyItem() {
+    setState(() {
+      final newIdx = math.Random().nextInt(_items.length + 1);
+      final length = math.Random().nextInt(10) + 2;
+      final newValues =
+          List.generate(length, (index) => math.Random().nextInt(10000));
+      _items.insertAll(newIdx, newValues);
+    });
+  }
 
   void _addItem() {
     setState(() {
@@ -50,11 +60,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _removeManyItem() {
+    setState(() {
+      if (_items.length == 0) {
+        return;
+      }
+
+      final startIdx = math.Random().nextInt(_items.length - 1);
+      final endIdx = math.Random().nextInt(_items.length - startIdx) + startIdx;
+      _items.removeRange(startIdx, endIdx);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title!),
       ),
       body: AutoList<int>(
         items: _items,
@@ -68,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border(
-                      top: BorderSide(color: Colors.grey[200]),
+                      top: BorderSide(color: Colors.grey[200]!),
                     ),
                   ),
                   child: Text(
@@ -99,6 +121,34 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: _addItem,
               tooltip: 'Add item',
               child: Icon(Icons.add),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: FloatingActionButton(
+              onPressed: _removeManyItem,
+              tooltip: 'Add many item',
+              child: Stack(
+                children: [
+                  Icon(Icons.remove),
+                  Transform.translate(
+                      offset: Offset(2, 2), child: Icon(Icons.remove)),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: FloatingActionButton(
+              onPressed: _addManyItem,
+              tooltip: 'Add many item',
+              child: Stack(
+                children: [
+                  Icon(Icons.add),
+                  Transform.translate(
+                      offset: Offset(2, 2), child: Icon(Icons.add)),
+                ],
+              ),
             ),
           ),
         ],

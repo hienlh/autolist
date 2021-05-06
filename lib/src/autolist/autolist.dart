@@ -53,26 +53,24 @@ class AutoList<T> extends StatefulWidget {
   ///   for equality (to determine what needs to be inserted/removed)
   /// - [padding] Padding around the edges of the underlying [ListView]
   AutoList({
-    Key key,
-    @required this.items,
-    @required this.duration,
-    AutoListCombinedItemBuilder<T> combinedBuilder,
-    AutoListAnimationBuilder animationBuilder,
-    AutoListItemBuilder<T> itemBuilder,
-    CompareOn<T> compareOn,
-    EdgeInsetsGeometry padding,
-  })  : assert(items != null),
-        assert(duration != null),
-        assert((combinedBuilder != null) ^ (itemBuilder != null)),
+    Key? key,
+    required this.items,
+    required this.duration,
+    AutoListCombinedItemBuilder<T>? combinedBuilder,
+    AutoListAnimationBuilder? animationBuilder,
+    AutoListItemBuilder<T>? itemBuilder,
+    CompareOn<T>? compareOn,
+    EdgeInsetsGeometry? padding,
+  })  : assert((combinedBuilder != null) ^ (itemBuilder != null)),
         assert(combinedBuilder == null || animationBuilder == null),
         this.compareOn = compareOn ?? ((t) => t),
         this.padding = padding ?? EdgeInsets.zero,
         this.builder = combinedBuilder ??
             ((context, item, animation) {
               animationBuilder ??= _defaultAnimationBuilder;
-              return animationBuilder(
+              return animationBuilder!(
                 animation,
-                itemBuilder(
+                itemBuilder!(
                   context,
                   item,
                 ),
@@ -97,7 +95,7 @@ class AutoList<T> extends StatefulWidget {
 class _AutoListState<T> extends State<AutoList<T>> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
-  List<T> _items;
+  late List<T> _items;
 
   @override
   void initState() {
@@ -118,12 +116,12 @@ class _AutoListState<T> extends State<AutoList<T>> {
     final difference = DifferenceSet.between(
       oldList: oldItems.map(oldWidget.compareOn),
       newList: _items.map(widget.compareOn),
-    );
+    )!;
 
     difference.adjustments.forEach((adjustment) {
       switch (adjustment.operation) {
         case Operation.insert:
-          _listKey.currentState.insertItem(
+          _listKey.currentState!.insertItem(
             adjustment.oldIndex,
             duration: widget.duration,
           );
@@ -132,7 +130,7 @@ class _AutoListState<T> extends State<AutoList<T>> {
         case Operation.remove:
           final itemToRemove = oldItems[adjustment.oldIndex];
 
-          _listKey.currentState.removeItem(
+          _listKey.currentState!.removeItem(
             adjustment.newIndex,
             (context, animation) => widget.builder(
               context,
