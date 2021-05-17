@@ -12,6 +12,7 @@ typedef Widget AutoListCombinedItemBuilder<T>(
   BuildContext context,
   T item,
   Animation<double> animation,
+  int index,
 );
 
 /// A builder which will wrap a widget with an animation.
@@ -25,6 +26,7 @@ typedef Widget AutoListAnimationBuilder(
 typedef Widget AutoListItemBuilder<T>(
   BuildContext context,
   T item,
+  int index,
 );
 
 typedef dynamic CompareOn<T>(T elem);
@@ -36,6 +38,12 @@ class AutoList<T> extends StatefulWidget {
   final List<T> items;
   final AutoListCombinedItemBuilder<T> builder;
   final Duration duration;
+  final ScrollController? controller;
+  final bool? primary;
+  final bool reverse;
+  final Axis scrollDirection;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
 
   final CompareOn<T> compareOn;
 
@@ -61,19 +69,22 @@ class AutoList<T> extends StatefulWidget {
     AutoListItemBuilder<T>? itemBuilder,
     CompareOn<T>? compareOn,
     EdgeInsetsGeometry? padding,
+    this.controller,
+    this.primary,
+    this.reverse = false,
+    this.scrollDirection = Axis.vertical,
+    this.shrinkWrap = false,
+    this.physics,
   })  : assert((combinedBuilder != null) ^ (itemBuilder != null)),
         assert(combinedBuilder == null || animationBuilder == null),
         this.compareOn = compareOn ?? ((t) => t),
         this.padding = padding ?? EdgeInsets.zero,
         this.builder = combinedBuilder ??
-            ((context, item, animation) {
+            ((context, item, animation, index) {
               animationBuilder ??= _defaultAnimationBuilder;
               return animationBuilder!(
                 animation,
-                itemBuilder!(
-                  context,
-                  item,
-                ),
+                itemBuilder!(context, item, index),
               );
             }),
         super(key: key);
@@ -133,10 +144,7 @@ class _AutoListState<T> extends State<AutoList<T>> {
           _listKey.currentState!.removeItem(
             adjustment.newIndex,
             (context, animation) => widget.builder(
-              context,
-              itemToRemove,
-              animation,
-            ),
+                context, itemToRemove, animation, adjustment.oldIndex),
             duration: widget.duration,
           );
           break;
@@ -150,11 +158,17 @@ class _AutoListState<T> extends State<AutoList<T>> {
       padding: widget.padding,
       key: _listKey,
       initialItemCount: widget.items.length,
+      controller: widget.controller,
+      physics: widget.physics,
+      shrinkWrap: widget.shrinkWrap,
+      scrollDirection: widget.scrollDirection,
+      reverse: widget.reverse,
+      primary: widget.primary,
       itemBuilder:
           (BuildContext context, int index, Animation<double> animation) {
         return this
             .widget
-            .builder(context, this.widget.items[index], animation);
+            .builder(context, this.widget.items[index], animation, index);
       },
     );
   }

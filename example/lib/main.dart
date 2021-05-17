@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: AutoList<int>(
         items: _items,
         duration: Duration(milliseconds: 400),
-        itemBuilder: (context, item) {
+        itemBuilder: (context, item, i) {
           return Row(
             children: <Widget>[
               Expanded(
