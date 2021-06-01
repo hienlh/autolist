@@ -11,6 +11,21 @@ animated list views, automatically managing insertions and deletions.
 
 ![autolist_demo](https://gitlab.com/benweitzman/autolist/uploads/b6c0666342803528d069474ad0b48fe7/autolist_demo.gif)
 
+## Install
+
+Add into `pubspec.yaml`
+
+```yaml
+...
+dependencies:
+  ...
+  autolist:
+    git:
+      url: https://github.com/hienlh/autolist.git
+      ref: v1.0.0
+...
+```
+
 ## To use:
 
 See more in `example/lib/main.dart`
